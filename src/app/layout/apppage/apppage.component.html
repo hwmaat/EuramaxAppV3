@@ -1,0 +1,22 @@
+<app-header (toggleMenu)="toggleDrawer()"></app-header>
+
+
+<dx-drawer
+    [opened]="isDrawerOpen"
+    template="menu"
+    [height]="250"
+    [minSize]="0"
+    position="left"
+    revealMode="expand"
+    >
+    <div *dxTemplate="let data of 'menu'">
+      <side-menu
+        (menuItemClick)="onMenuItemClick($event)">
+      </side-menu>
+    </div>
+    <router-outlet></router-outlet>
+</dx-drawer>
+
+<div class = "footer-container">
+    <app-footer></app-footer>
+</div>

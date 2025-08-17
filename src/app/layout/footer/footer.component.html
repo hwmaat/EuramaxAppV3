@@ -1,0 +1,45 @@
+<!-- 
+ <footer class="footer-container">
+  <div class="sticky-bottom-frame">
+    <div class="footer-center">
+      <span *ngIf="username()" class="username">{{ username() }}</span>
+      <dx-button *ngIf="username()" text="Logout" type="normal" stylingMode="text" (onClick)="logout()"></dx-button>
+    </div>
+    <div class="footer-right">
+      <dx-switch
+        [value]="value"
+        (onValueChanged)="themeChange.emit($event.value)"
+        switchedOnText="Dark"
+        switchedOffText="Light">
+      </dx-switch>
+    </div>
+  </div>
+</footer> 
+-->
+
+<footer class="footer-container">
+  <div class="footerdiv">
+    <div class="left">©{{ currentYear }} H.W. Maat - Amsline
+
+    </div>
+    <div class="center">
+      @if (username()) {
+        <span class="username">{{ username() }}</span>
+        <dx-button text="Logout" type="normal" stylingMode="text" (onClick)="logout()"></dx-button>
+      } @else {
+        <span class="username">Not logged in</span>
+      }
+    </div>
+    <div class="right">
+      <dx-switch
+        [value]="themeValue"
+        (onValueChanged)="themeChange($event.value)"
+        switchedOnText="Dark"
+        switchedOffText="Light">
+      </dx-switch>
+    </div> 
+    <div class="righttest">
+
+    </div>
+  </div>
+</footer>

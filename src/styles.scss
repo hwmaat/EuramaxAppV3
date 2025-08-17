@@ -1,1 +1,47 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* DevExtreme theme is loaded dynamically via index.html theme links */
+
+/* Global layout helpers */
+html, body, app-root { height: 100%; }
+body { margin: 0; }
+
+
+.light-theme {
+  --edit-bg: #08ce43;
+  --edit-text: #000;
+  --edit-border: #ccc;
+  --toolbar-bg: #008671;
+  --toolbar-hover-bg: black;
+  --toolbar-hover-text: yellow;
+  --card-bg: #f9f9f9;
+  --card-hover: #f1f1f1;
+  --accent-color: #1976d2;
+  --form-background: whitesmoke;
+  --footer-color:darkgrey;
+  --footer-bg:#008671;
+  --grid-header-bg: #f1f1f1;
+  --grid-header-text: #333;
+  --top-frame-backcolor:#008671;
+  --top-frame-color:#ffffff;
+}
+
+
+.dark-theme {
+  --edit-bg: cadetblue;
+  --edit-text: #fff;
+  --edit-border: #444;
+  --toolbar-bg:  #008671;
+  --toolbar-hover-bg: black;
+  --toolbar-hover-text: yellow;
+  --card-bg: #1e1e1e;
+  --card-hover: #2c2c2c;
+  --accent-color: #90caf9;
+  --form-background: black;
+  --footer-color:whitesmoke;
+  --footer-bg:#008671;
+  --grid-header-bg: #2c2c2c;
+  --grid-header-text: #fff;
+  --top-frame-backcolor:#008671;
+  --top-frame-color:#ffffff;
+}

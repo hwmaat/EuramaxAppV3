@@ -1,0 +1,71 @@
+
+
+.menu-btn { font-size: 20px; background: transparent; border: none; cursor: pointer; padding: 8px 12px; }
+
+
+ .header-container {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  background-color: #008671 !important;
+  padding-top: 12px;
+
+}
+
+.left-div {
+  flex: 1;
+  display: flex;
+  color: white;
+  align-items: baseline;
+  .menu-btn { font-size: 20px; background: transparent; color:white;border: none; cursor: pointer; padding: 8px 12px; }
+}
+
+.center-div {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.right-div {
+  flex: 1;
+}
+
+.header-mode-dev{
+  color:yellow
+}
+
+.header-mode-prod{
+  background-color: red;
+  color:yellow
+}
+
+.admin-info {
+  margin-left:10px;
+}
+
+::ng-deep .username .dx-button-has-text .dx-button-content  .dx-button-text{
+  color: white!important;
+}
+
+.environment-prod{
+  background-color: black;
+  color: red !important;
+  width: 250px;
+  text-align: center;
+}
+
+.environment-test{
+  background-color: black;
+  color: yellowgreen !important;
+  width: 250px;
+  text-align: center;
+}

@@ -1,0 +1,14 @@
+{
+  "apiBaseUrl": "https://localhost:7205/",
+  "appBaseUrl": "https://localhost:4200/",
+  "client":"Euramax",
+  "backgroundImage":"EuramaxBackground.jpg",
+  "logo":"EuramaxLogo_light.png",
+  "theme":"dark",
+  "title":"Euramax Api Portal",
+  "vibNetworkLocation":"\\\\spinyspider.euramax.rmd\\euramax\\Dovetail\\production\\vib\test",
+  "zenyaFolderId":"265",
+  "vibNetworkLocation_test":"\\\\spinyspider.euramax.rmd\\euramax\\Dovetail\\production\\vib",
+  "zenyaFolderId_test":"731",
+  "defaultBaanAdministration":"130"
+}

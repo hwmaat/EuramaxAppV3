@@ -1,0 +1,25 @@
+<!-- <div class="sticky-top-frame">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" type="button" (click)="toggleMenu.emit()" title="Toggle menu">☰</button>
+    </div>
+    <div class="topbar-center">
+      <img class="topbar-logo" [src]="logo" alt="Euramax" style="max-height: 18px;" />
+    </div>
+    <div class="topbar-right"></div>
+  </div>
+</div>
+ -->
+
+ <div class="header-container">
+  <div class="left-div">
+    <dx-button class="menu-btn" type="default" (onClick)="toggleMenu.emit()" hint="Toggle menu">☰</dx-button>
+  </div>
+
+  <div class = "center-div">
+      <img [src]="logo" alt="Euramax Logo" style="max-height: 18px;" />
+  </div>
+
+  <div class = "right-div"></div>
+
+</div>
