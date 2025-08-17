@@ -19,7 +19,7 @@ export function configurationInitializer(): () => Promise<void> {
     const globals = inject(Globals);
     
     // Determine initial environment mode
-    const initialMode = environment.production ? 'prod' : 'test'; // or 'dev'
+    const initialMode = environment.production ? 'prod' : 'dev';
     
     console.log('main ==> configurationInitializer initial environmentMode:', initialMode);
     

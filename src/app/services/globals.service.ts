@@ -13,28 +13,47 @@ export class Globals {
   async setEnvironmentMode(mode: string): Promise<void> {
     try {
       const env = mode === 'prod' ? 'prod' : 'dev';
-      
       console.log('Globals ==> setEnvironmentMode changing to:', mode);
-      
+
       const configPath = `/assets/config.${env}.json`;
       const configResponse = await fetch(configPath);
       if (!configResponse.ok) {
         throw new Error(`Failed to load ${configPath}`);
       }
-      const config = await configResponse.json();
-  
+      const raw = await configResponse.json();
 
-      // Update the settings and environment mode
-      this.setSettings(config);
+      // Validate shape and required keys
+      validateConfig(raw);
+
+      // Validate and normalize apiBaseUrl
+      const normalized = this.normalizeConfig(raw as IAppConfig);
+
+      // Persist settings and mode
+      this.setSettings(normalized);
       this.environmentModeSubject.next(mode);
-      
     } catch (error) {
       console.error('Error setting environment mode:', error);
       this.setError(`Failed to load configuration for ${mode} environment: ${(error as Error).message}`);
-      throw error; // Re-throw so caller can handle it
+      throw error;
     }
   }
 
+    private normalizeConfig(config: IAppConfig): IAppConfig {
+    const trimmedUrl = (config.apiBaseUrl || '').trim().replace(/\/+$/, '');
+    // Require absolute URL
+    try {
+      // Throws if invalid URL (e.g., empty or relative)
+      // eslint-disable-next-line no-new
+      new URL(trimmedUrl);
+    } catch {
+      throw new Error(`Configuration invalid. apiBaseUrl must be an absolute URL. Received: "${config.apiBaseUrl}"`);
+    }
+    return {
+      ...config,
+      apiBaseUrl: trimmedUrl
+    };
+  }
+  
   private settingsBehaviourSubject = new BehaviorSubject<IAppConfig>({
     apiBaseUrl: '',
     appBaseUrl: '',

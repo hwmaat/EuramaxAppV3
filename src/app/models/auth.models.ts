@@ -38,3 +38,8 @@ export interface UserGroupDto {
 export type UserSummary = Pick<AuthResponse,
   'userId' | 'username' | 'firstname' | 'lastname' | 'usergroupId' | 'usergroupName'
 >;
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}

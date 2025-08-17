@@ -49,7 +49,8 @@ export interface MenuItem {
       icon: 'mdi mdi-cogs',
       items: [
         { text: 'Users', items: [
-          { text: 'Users', path: 'system/users'}
+          { text: 'Users', path: 'system/users'},
+          { text: 'Usergroups', path: 'system/usergroups'}
         ] },            
         { text: 'System Settings', path: 'settings', beginGroup:true, icon: 'mdi mdi-settings'}
       ]
