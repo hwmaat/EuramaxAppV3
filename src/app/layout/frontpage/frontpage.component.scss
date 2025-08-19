@@ -1,3 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--dx-color-main-bg );
+}
 .frontpage-center {
   display: flex;
   justify-content: center;
@@ -5,3 +12,4 @@
   min-height: 80vh;
   width: 100%;
 }
+

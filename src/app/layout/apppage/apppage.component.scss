@@ -24,3 +24,7 @@ dx-drawer {
   height:35px;
   flex: 0 0 auto;
 }
+::ng-deep .dx-drawer-shrink .dx-drawer-panel-content{
+   border-right: 1px solid grey;
+   background-color: var(--menu-left-bg);
+}

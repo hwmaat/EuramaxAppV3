@@ -1,0 +1,15 @@
+.em-container {
+    width: 100%;
+    height: 100%;
+}
+
+/* user-page2-page.component.scss */
+.masked-password .dx-texteditor-input {
+  -webkit-text-security: disc; /* mask like type=password */
+  text-security: disc;
+}
+
+.masked-password.unmasked .dx-texteditor-input {
+  -webkit-text-security: none;
+  text-security: none;
+}

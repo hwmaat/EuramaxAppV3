@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Globals } from '@app/services/globals.service';
 import { WithDestroy } from '@app/common/WithDestroy';
@@ -17,13 +17,22 @@ export class HeaderComponent extends WithDestroy() {
 
   logo = '';
   private globals = inject(Globals);
-
+  readonly logoUrl = computed(() => {
+    const cfg = this.globals.settings();
+    const file = cfg?.logo ?? 'EuramaxLogo_light.png';
+    return `assets/${file}`;
+  });
+  
   constructor() {
     super();
-    this.globals.settings$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(config => {
-        this.logo = 'assets/' + (config.logo || 'EuramaxLogo_light.png');
-      });
+
+    // this.globals.settings$
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(config => {
+    //     this.logo = 'assets/' + (config.logo || 'EuramaxLogo_light.png');
+    //   });
+
+
+
   }
 }

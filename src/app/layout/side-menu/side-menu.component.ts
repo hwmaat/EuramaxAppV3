@@ -1,7 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { DxTreeViewModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
-import { menuItems } from '@app/menu-items';
+import { MenuService } from '@app/services/menu.service';
 
 @Component({
   selector: 'side-menu',
@@ -12,9 +12,12 @@ import { menuItems } from '@app/menu-items';
 })
 export class SideMenuComponent {
   @Output() menuItemClick = new EventEmitter<any>();
-  menuItems = menuItems;
+  private menu = inject(MenuService);
 
-  onMenuItemClick(event: any) {
-    this.menuItemClick.emit(event);
+  // Observable of the filtered tree
+  menuItems$ = this.menu.filteredMenuItems$;
+
+  onMenuItemClick(e: any) {
+    this.menuItemClick.emit(e);
   }
 }

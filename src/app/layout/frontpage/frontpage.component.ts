@@ -1,7 +1,8 @@
 
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from '../../components/login/login.component';
+import { ThemeService } from '@app/services/theme.service';
 
 @Component({
   selector: 'app-frontpage',
@@ -11,5 +12,9 @@ import { LoginComponent } from '../../components/login/login.component';
   styleUrls: ['./frontpage.component.scss']
 })
 export class FrontpageComponent {
+ themeService = inject(ThemeService);
 
+constructor() {
+
+}
 }

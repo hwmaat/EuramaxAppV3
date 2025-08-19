@@ -1,0 +1,128 @@
+<div class="em-container">
+  <dx-toolbar class = "ams-toolbar">
+      <dxi-item location="before"
+      ><div *dxTemplate>
+          <h3>{{caption}}</h3>
+      </div></dxi-item>
+  <dxi-item location="after">
+
+  </dxi-item>
+</dx-toolbar>
+
+<dx-data-grid
+    #gridContainer
+    id='gridContainer'
+    [dataSource]="users"
+    keyExpr="id"
+    [focusedRowEnabled]="true"
+    [hoverStateEnabled]="true"
+    (onCellHoverChanged)="onCellHoverChanged($event)"
+    (onExporting)="onExporting($event, 'Users')"
+    (onToolbarPreparing)="onToolbarPreparing($event)"   
+    (onInitNewRow)="onInitNewRow($event)"
+    (onEditingStart)="onEditingStart($event)"
+    (onRowInserting)="onRowInserting($event)"
+    (onRowUpdating)="onRowUpdating($event)"
+    (onRowRemoving)="onRowRemoving($event)"    
+    [cellHintEnabled]="true"
+>
+  <dxo-editing
+    mode="popup"
+    [allowUpdating]="true"
+    [allowAdding]="false"
+    [allowDeleting]="false"
+
+  >
+    <dxo-popup title="User" [showTitle]="true" [width]="600" [height]="520"></dxo-popup>
+    <form autocomplete="off">
+    <dxo-form [validationGroup]="'userFormGroup'" [showValidationSummary]="true">
+      <dxi-item dataField="username" [isRequired]="true" [validationRules]="required"></dxi-item>
+      <dxi-item dataField="firstname" [isRequired]="true" [validationRules]="required"></dxi-item>
+      <dxi-item dataField="lastname"  [isRequired]="true" [validationRules]="required"></dxi-item>
+
+      <dxi-item dataField="usergroupId" editorType="dxSelectBox"
+        [editorOptions]="{dataSource: userGroups, valueExpr: 'id', displayExpr: 'groupName', searchEnabled: true, searchExpr: 'groupName',
+          showDataBeforeSearch:true, inputAttr: { autocomplete: 'off', name: 'ug_select' }, showClearButton: true
+        }"
+        [isRequired]="true"
+        [validationRules]="required">
+        <dxo-label text="User Group"></dxo-label>
+      </dxi-item>
+
+      <!-- Password: required on create, optional on edit -->
+<!--       <dxi-item
+        dataField="password"
+        editorType="dxTextBox"
+        [editorOptions]="{ mode: 'password', placeholder: '••••••••', inputAttr: { autocomplete: 'new-password' } }"
+        [validationRules]="passwordRequired ? [
+            { type: 'required', message: 'Password is required' },
+            { type: 'stringLength', min: 8, message: 'Password must be at least 8 characters' }
+          ] : [{ type: 'stringLength', min: 8, ignoreEmptyValue: true, message: 'Password must be at least 8 characters' }]"
+      >
+        <dxo-label text="Password (leave empty to keep)"></dxo-label>
+      </dxi-item> -->
+
+      <dxi-item dataField="password"
+                cssClass="masked-password"
+                editorType="dxTextBox"
+                [editorOptions]="passwordEditorOptions">
+        <dxo-label text="Password (leave empty to keep)"></dxo-label>
+
+        <!-- Required only on create -->
+        <dxi-validation-rule *ngIf="passwordRequired" type="required" message="Password is required"></dxi-validation-rule>
+
+        <!-- Min length; ignore when empty on edit -->
+        <dxi-validation-rule type="stringLength"
+                             [min]="8"
+                             [ignoreEmptyValue]="!passwordRequired"
+                             message="Password must be at least 8 characters"></dxi-validation-rule>
+      </dxi-item>
+
+
+      <dxi-item dataField="isActive" editorType="dxCheckBox">
+        <dxo-label text="Active"></dxo-label>
+      </dxi-item>
+    </dxo-form>
+    </form>
+  </dxo-editing>
+
+<dxo-scrolling rowRenderingMode="virtual"> </dxo-scrolling>
+
+<dxo-paging [enabled]="true" [pageSize]="pageSize"> </dxo-paging>
+<dxo-pager
+  [visible]="true" [showPageSizeSelector]="true" [showInfo]="true" [showNavigationButtons]="true"
+  [allowedPageSizes]="[5, 10, 15, 20, 25, 100]"
+  [displayMode]="'full'">
+</dxo-pager>
+
+<dxi-column caption="action" [width]="200" cellTemplate="buttonrowtemplate"></dxi-column>
+<dxi-column dataField="id"   [width]="50" caption="id#" [allowEditing]="false"></dxi-column>
+<dxi-column dataField="username" [width]="175" caption="username"></dxi-column>
+<dxi-column dataField="firstname" [width]="150" caption="firstname"></dxi-column>
+<dxi-column dataField="lastname" [width]="150" caption="lastname"></dxi-column>
+<dxi-column dataField="usergroupId" caption="Group" [lookup]="{dataSource: userGroups, valueExpr: 'id', displayExpr: 'groupName'}"></dxi-column>
+<dxi-column dataField="isActive" caption="Active" dataType="boolean"></dxi-column>
+<dxi-column dataField="password" [visible]="false"></dxi-column>
+<dxi-column dataField="" width="100%" caption=""></dxi-column>
+
+<div  *dxTemplate="let data of 'buttonrowtemplate'">
+  <div class="button-column" *ngIf ="hoverIndex == getRowIndex(data) || data.row.isEditing ">
+    <dx-button hint = "edit user" name="edit" class="small-icon" icon="edit"  stylingMode="text" (onClick)="EditRecord(data)"></dx-button>
+    <dx-button hint = "delete user" name="delete" class="small-icon" icon="trash" ></dx-button>
+    <dx-button hint="Deactivate user" class="small-icon" icon="close"  (onClick)="onDeactivate(data)"></dx-button>
+    <dx-button hint="Clear lockout" class="small-icon" icon="check" (onClick)="onClearLockout(data)"></dx-button>
+    <dx-button hint="Logout all devices" class="small-icon" icon="runner" (onClick)="onLogoutAllDevices(data)"></dx-button>
+  </div>
+</div>
+
+
+<div *dxTemplate="let data of 'headercaption'">
+    <div class="informer">
+      {{hoverIndex}}
+    </div>
+</div>
+
+</dx-data-grid>
+
+</div>
+

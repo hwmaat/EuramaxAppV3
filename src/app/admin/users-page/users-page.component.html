@@ -1,0 +1,82 @@
+
+<dx-data-grid
+  [dataSource]="users"
+  [keyExpr]="'id'"
+  [columnAutoWidth]="true"
+  [rowAlternationEnabled]="true"
+  [showBorders]="true"
+  [repaintChangesOnly]="true"
+  height="calc(100vh - 180px)"
+  (onInitNewRow)="onInitNewRow($event)"
+  (onEditingStart)="onEditingStart($event)"
+  (onRowInserting)="onRowInserting($event)"
+  (onRowUpdating)="onRowUpdating($event)"
+  (onRowRemoving)="onRowRemoving($event)"
+>
+  <dxo-editing
+    mode="popup"
+    [allowUpdating]="true"
+    [allowAdding]="true"
+    [allowDeleting]="true"
+  >
+    <dxo-popup title="User" [showTitle]="true" [width]="600" [height]="520"></dxo-popup>
+    <dxo-form>
+      <dxi-item dataField="username" [isRequired]="true" [validationRules]="required"></dxi-item>
+      <dxi-item dataField="firstname" [isRequired]="true" [validationRules]="required"></dxi-item>
+      <dxi-item dataField="lastname"  [isRequired]="true" [validationRules]="required"></dxi-item>
+
+      <dxi-item dataField="usergroupId" editorType="dxSelectBox"
+        [editorOptions]="{dataSource: userGroups, valueExpr: 'id', displayExpr: 'groupName', searchEnabled: true, searchExpr: 'groupName',
+          showDataBeforeSearch:'true', inputAttr: { autocomplete: 'off', name: 'ug_select' }, showClearButton: true
+        }"
+        [isRequired]="true"
+        [validationRules]="required">
+        <dxo-label text="User Group"></dxo-label>
+      </dxi-item>
+
+      <!-- Password: required on create, optional on edit -->
+      <dxi-item
+        dataField="password"
+        editorType="dxTextBox"
+        [editorOptions]="{ mode: 'password', placeholder: '••••••••', inputAttr: { autocomplete: 'new-password' } }"
+        [validationRules]="passwordRequired ? [
+            { type: 'required', message: 'Password is required' },
+            { type: 'stringLength', min: 8, message: 'Password must be at least 8 characters' }
+          ] : [
+            { type: 'stringLength', min: 8, message: 'Password must be at least 8 characters' }
+          ]"
+      >
+        <dxo-label text="Password (leave empty to keep)"></dxo-label>
+      </dxi-item>
+
+      <dxi-item dataField="isActive" editorType="dxCheckBox">
+        <dxo-label text="Active"></dxo-label>
+      </dxi-item>
+    </dxo-form>
+  </dxo-editing>
+  <dxi-column caption="action" [width]="100" cellTemplate="buttonrowtemplate"></dxi-column>
+  <dxi-column dataField="id" caption="#id"></dxi-column>
+  <dxi-column dataField="username" caption="Username"></dxi-column>
+  <dxi-column dataField="firstname" caption="First name"></dxi-column>
+  <dxi-column dataField="lastname" caption="Last name"></dxi-column>
+  <dxi-column dataField="usergroupId" caption="Group" [lookup]="{dataSource: userGroups, valueExpr: 'id', displayExpr: 'groupName'}"
+  ></dxi-column>
+  <dxi-column dataField="isActive" caption="Active" dataType="boolean"></dxi-column>
+  <dxi-column dataField="password" [visible]="false"></dxi-column>
+  <dxi-column dataField="" width="100%" caption=""></dxi-column>     
+
+  <dxi-column type="buttons">
+    <dxi-button name="edit"></dxi-button>
+    <dxi-button name="delete"></dxi-button>
+    <dxi-button hint="Deactivate user" icon="close" [onClick]="onDeactivate.bind(this)"></dxi-button>
+    <dxi-button hint="Clear lockout" icon="refresh" [onClick]="onClearLockout.bind(this)"></dxi-button>
+    <dxi-button hint="Logout all devices" icon="runner" [onClick]="onLogoutAllDevices.bind(this)"></dxi-button>
+  </dxi-column>
+
+  <dxo-search-panel [visible]="true" [width]="260" placeholder="Search..."></dxo-search-panel>
+  <dxo-column-chooser [enabled]="true"></dxo-column-chooser>
+  <dxo-export [enabled]="true"></dxo-export>
+  <dxo-paging [pageSize]="20"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[10, 20, 50, 100]"></dxo-pager>
+</dx-data-grid>
+ 

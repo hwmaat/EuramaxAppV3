@@ -1,0 +1,37 @@
+<dx-data-grid
+  [dataSource]="groups"
+  [keyExpr]="'id'"
+  [columnAutoWidth]="true"
+  [rowAlternationEnabled]="true"
+  [showBorders]="true"
+  [repaintChangesOnly]="true"
+  height="calc(100vh - 180px)"
+  (onRowInserting)="onRowInserting($event)"
+  (onRowUpdating)="onRowUpdating($event)"
+  (onRowRemoving)="onRowRemoving($event)"
+>
+  <dxo-editing
+    mode="popup"
+    [allowUpdating]="true"
+    [allowAdding]="true"
+    [allowDeleting]="true"
+  >
+    <dxo-popup title="User Group" [showTitle]="true" [width]="480" [height]="280"></dxo-popup>
+    <dxo-form>
+      <dxi-item dataField="groupName" [isRequired]="true" [validationRules]="required"></dxi-item>
+    </dxo-form>
+  </dxo-editing>
+  <dxi-column dataField="id" caption="id" [width]="75"></dxi-column>
+  <dxi-column dataField="groupName" caption="Group Name"></dxi-column>
+  <dxi-column dataField="description" width="100%" caption="Description"></dxi-column>
+
+  <dxi-column type="buttons">
+    <dxi-button name="edit"></dxi-button>
+    <dxi-button name="delete"></dxi-button>
+  </dxi-column>
+
+  <dxo-search-panel [visible]="true" [width]="260" placeholder="Search..."></dxo-search-panel>
+  <dxo-column-chooser [enabled]="true"></dxo-column-chooser>
+  <dxo-paging [pageSize]="20"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[10, 20, 50, 100]"></dxo-pager>
+</dx-data-grid>

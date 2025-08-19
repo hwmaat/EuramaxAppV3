@@ -1,16 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError, distinctUntilChanged, map, filter } from 'rxjs';
 import { Globals } from '@app/services/globals.service';
-import {
-  AuthResponse,
-  LoginRequest,
-  RefreshRequest,
-  UserDto,
-  UserGroupDto,
-  UserSummary,
-  ChangePasswordRequest
-} from '../models/auth.models';
+import {AuthResponse,LoginRequest,RefreshRequest,UserDto,UserGroupDto,UserSummary,ChangePasswordRequest} from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -24,31 +16,33 @@ export class AuthService {
 
   private accessToken$ = new BehaviorSubject<string | null>(null);
   private refreshToken$ = new BehaviorSubject<string | null>(null);
+  
+  private storage = sessionStorage;
 
   currentUser$ = new BehaviorSubject<UserSummary | null>(null);
   user$ = this.currentUser$.asObservable();
+  currentUserGroups$ = this.user$.pipe(
+    map(u => u ? [{ id: u.usergroupId, name: u.usergroupName }] : [])
+  );
 
   // Use inject instead of constructor DI
   private http = inject(HttpClient);
   private globals = inject(Globals);
+  private currentUserGroupsCache: { id: number; name: string }[] = [];
 
   constructor() {
     this.migrateOldKeys();
-    this.accessToken$.next(localStorage.getItem(this.LS_ACCESS));
-    this.refreshToken$.next(localStorage.getItem(this.LS_REFRESH));
-    const s = localStorage.getItem(this.LS_USER);
+    this.clearPersistedLocalTokensIfAny(); // <- ensure no auto-login from old localStorage
+
+    this.accessToken$.next(this.storage.getItem(this.LS_ACCESS));
+    this.refreshToken$.next(this.storage.getItem(this.LS_REFRESH));
+    const s = this.storage.getItem(this.LS_USER);
+
     if (s) { try { this.currentUser$.next(JSON.parse(s) as UserSummary); } catch { /* ignore */ } }
 
-    // Pick apiBaseUrl from settings (already validated/normalized by Globals)
-    this.globals.settings$
-      .pipe(
-        map(cfg => (cfg?.apiBaseUrl ?? '').trim()),
-        filter(url => !!url),
-        distinctUntilChanged()
-      )
-      .subscribe(url => {
-        this.baseUrl = url;
-      });
+
+      
+      this.currentUserGroups$.subscribe(gs => this.currentUserGroupsCache = gs);
   }
 
   private ensureBaseUrl(): string {
@@ -58,13 +52,40 @@ export class AuthService {
     return this.baseUrl;
   }
 
-  private url(path: string): string {
-    const p = path.startsWith('/') ? path : `/${path}`;
-    return `${this.ensureBaseUrl()}${p}`;
+
+    // Quick sync check from components/templates
+  isInRole(role: string): boolean {
+    const u = this.currentUser$.value;
+    return !!u && (u.usergroupName ?? '').toLowerCase() === role.toLowerCase();
   }
 
+  // Convenience:
+  isAdmin(): boolean {
+    return this.isInRole('Admin');
+  }
+
+  // Observable (handy if you want async pipe in templates)
+  hasRole$(role: string) {
+    return this.currentUser$.pipe(
+      map(u => !!u && (u.usergroupName ?? '').toLowerCase() === role.toLowerCase()),
+      distinctUntilChanged()
+    );
+  }
+
+  hasAccess(requiredGroups: number[]): boolean {
+  if (!requiredGroups || requiredGroups.length === 0) {
+    return true; // no restriction
+  }
+  if (requiredGroups.includes(0)) {
+    return true; // 0 = everyone
+  }
+  const userGroupIds = this.currentUserGroupsCache.map(g => g.id);
+  return requiredGroups.some(id => userGroupIds.includes(id));
+}
+
+
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.url('/api/auth/authenticate'), credentials).pipe(
+    return this.http.post<AuthResponse>(this.globals.apiUrl('/api/auth/authenticate'), credentials).pipe(
       tap(res => this.storeAuth(res)),
       catchError(err => this.forwardHttpError(err))
     );
@@ -74,35 +95,35 @@ export class AuthService {
     const token = this.refreshToken$.value;
     if (!token) return throwError(() => new Error('No refresh token available'));
     const body: RefreshRequest = { refreshToken: token };
-    return this.http.post<AuthResponse>(this.url('/api/auth/refresh'), body).pipe(
+    return this.http.post<AuthResponse>(this.globals.apiUrl('/api/auth/refresh'), body).pipe(
       tap(res => this.storeAuth(res)),
       catchError(err => this.forwardHttpError(err))
     );
   }
 
   getUsers(): Observable<UserDto[]> {
-    return this.http.get<UserDto[]>(this.url('/api/auth/users'), { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<UserDto[]>(this.globals.apiUrl('/api/auth/users'), { headers: this.getAuthHeaders() }).pipe(
       catchError(err => this.forwardHttpError(err))
     );
   }
 
   getUserGroups(): Observable<UserGroupDto[]> {
-    return this.http.get<UserGroupDto[]>(this.url('/api/auth/usergroups'), { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<UserGroupDto[]>(this.globals.apiUrl('/api/auth/usergroups'), { headers: this.getAuthHeaders() }).pipe(
       catchError(err => this.forwardHttpError(err))
     );
   }
 
   changePassword(body: ChangePasswordRequest) {
-    return this.http.post<AuthResponse>(this.url('/api/auth/change-password'), body).pipe(
+    return this.http.post<AuthResponse>(this.globals.apiUrl('/api/auth/change-password'), body).pipe(
       tap(res => this.storeAuth(res)),
       catchError(err => this.forwardHttpError(err))
     );
   }
 
   logout(): void {
-    localStorage.removeItem(this.LS_ACCESS);
-    localStorage.removeItem(this.LS_REFRESH);
-    localStorage.removeItem(this.LS_USER);
+    this.storage.removeItem(this.LS_ACCESS);
+    this.storage.removeItem(this.LS_REFRESH);
+    this.storage.removeItem(this.LS_USER);
     this.accessToken$.next(null);
     this.refreshToken$.next(null);
     this.currentUser$.next(null);
@@ -127,8 +148,8 @@ export class AuthService {
   }
 
   private storeAuth(res: AuthResponse): void {
-    localStorage.setItem(this.LS_ACCESS,  res.accessToken);
-    localStorage.setItem(this.LS_REFRESH, res.refreshToken);
+    this.storage.setItem(this.LS_ACCESS,  res.accessToken);
+    this.storage.setItem(this.LS_REFRESH, res.refreshToken);
 
     const user: UserSummary = {
       userId: res.userId,
@@ -138,7 +159,7 @@ export class AuthService {
       usergroupId: res.usergroupId,
       usergroupName: res.usergroupName
     };
-    localStorage.setItem(this.LS_USER, JSON.stringify(user));
+    this.storage.setItem(this.LS_USER, JSON.stringify(user));
 
     this.accessToken$.next(res.accessToken);
     this.refreshToken$.next(res.refreshToken);
@@ -148,7 +169,11 @@ export class AuthService {
   private migrateOldKeys(): void {
     const oldKeys = ['access_token', 'refresh_token', 'user'];
     for (const k of oldKeys) {
-      if (localStorage.getItem(k) !== null) { localStorage.removeItem(k); }
+      if (this.storage.getItem(k) !== null) { this.storage.removeItem(k); }
     }
   }
+  private clearPersistedLocalTokensIfAny(): void {
+  const keys = [this.LS_ACCESS, this.LS_REFRESH, this.LS_USER, 'access_token', 'refresh_token', 'user'];
+  for (const k of keys) this.storage.removeItem(k);
+}
 }

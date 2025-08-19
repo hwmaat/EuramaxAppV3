@@ -24,6 +24,8 @@ body { margin: 0; }
   --grid-header-text: #333;
   --top-frame-backcolor:#008671;
   --top-frame-color:#ffffff;
+  --menu-left-bg:whitesmoke;
+
 }
 
 
@@ -44,4 +46,55 @@ body { margin: 0; }
   --grid-header-text: #fff;
   --top-frame-backcolor:#008671;
   --top-frame-color:#ffffff;
+  --menu-left-bg:black;
+}
+
+/* Datagrid =============================================================== */
+ #gridContainer {
+    height:calc(100% - 80px);
+    width:100%;
+
+    .small-button {
+      font-size: 12px !important;
+      height: 16px !important;    
+    }
+      .dx-button.small-icon {
+        font-size: 12px !important;
+        width: 16px !important;
+        height: 16px !important;
+        background-color: transparent;
+        color:var(--dx-color-primary)!important;
+    }
+  }
+  
+  .informer {
+    margin-top: 2px;
+    margin-bottom: 1px;
+    color: cornflowerblue;
+    font-size:16px;
+    font-weight: 700;
+    
+  }
+  .infcheckbox >div {
+    font-size: 12px !important;
+    display: flex;
+    align-items: center;
+    margin-left:5px;
+  }
+  .dx-toolbar-label.infcheckbox .dx-toolbar-item-content > div {
+    margin-right: 5px;
+    margin-bottom: 2px;
+  }
+  
+  .dx-switch{
+    height:20px !important;
+  }
+
+ .dx-edit-row .dx-editor-cell .dx-texteditor{
+    background-color: var(--edit-bg);
+    color: var(--edit-text);
+  }
+
+::ng-deep .dx-datagrid .dx-row>td {
+  line-height:0 !important;
 }

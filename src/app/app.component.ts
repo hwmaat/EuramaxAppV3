@@ -5,7 +5,7 @@ import { WithDestroy } from './common/WithDestroy';
 import { takeUntil } from 'rxjs';
 import { ApppageComponent } from "./layout/apppage/apppage.component";
 import { FrontpageComponent } from "./layout/frontpage/frontpage.component";
-import { ThemeaService } from './services/themea.service';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +15,7 @@ import { ThemeaService } from './services/themea.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent extends WithDestroy()  implements OnInit  {
-  themeService = inject(ThemeaService);
+  themeService = inject(ThemeService);
   username = signal<string | null>(null);
   private auth = inject(AuthService);
 

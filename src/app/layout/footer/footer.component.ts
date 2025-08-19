@@ -1,12 +1,12 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, effect, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DxSwitchModule, DxButtonModule } from 'devextreme-angular';
 import { AuthService } from '@app/services/auth.service';
 import { signal } from '@angular/core';
 import { WithDestroy } from '@app/common/WithDestroy';
 import { takeUntil } from 'rxjs';
-import { Theme } from '@app/services/themea.service';
-import { ThemeaService } from '@app/services/themea.service';
+import { ThemeService } from '@app/services/theme.service';
+import { Globals } from '@app/services/globals.service';
 
 @Component({
   selector: 'app-footer',
@@ -17,11 +17,13 @@ import { ThemeaService } from '@app/services/themea.service';
 })
 export class FooterComponent extends WithDestroy() {
   currentYear = new Date().getFullYear();
-  private themeService = inject(ThemeaService)
+  private themeService = inject(ThemeService)
   private auth = inject(AuthService);
+  private globals = inject(Globals)
   username = signal<string | null>(null);
   administratie = "test";
-  themeValue = false;
+  themeValue = true; // true for dark theme, false for light theme
+  baseUrl='';
 
   constructor() {
     super();
@@ -37,6 +39,13 @@ export class FooterComponent extends WithDestroy() {
       .subscribe(t => {
         this.themeValue = t === 'dark';
       });
+
+    effect(() => {
+    const url = this.globals.apiBaseUrl(); // already trimmed & no trailing slash
+    if (url) {
+      this.baseUrl = url;
+    }
+    });
   }
 
   logout() {
@@ -44,8 +53,7 @@ export class FooterComponent extends WithDestroy() {
   }
 
   themeChange(value: boolean) {
-    const theme: Theme = value ? 'dark' : 'light';
-    this.themeService.setTheme(theme);
+    this.themeService.switchTheme(value);
   }
 
 }

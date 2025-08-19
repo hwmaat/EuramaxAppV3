@@ -1,6 +1,6 @@
 <div class="menu">
   <dx-tree-view
-    [items]="menuItems"
+    [items]="(menuItems$ | async) ?? []"
     displayExpr="text"
     [width]="220"
     (onItemClick)="onMenuItemClick($event)"
@@ -13,11 +13,9 @@
     [searchEnabled]="false">
     <ng-template let-item="item">
       <span>
-        @if (item.icon) {
-          <i [class]="item.icon"></i>
-        }
+        @if (item.icon) { <i [class]="item.icon"></i> }
         {{ item.text }}
       </span>
     </ng-template>
   </dx-tree-view>
-</div>
+</div>  
